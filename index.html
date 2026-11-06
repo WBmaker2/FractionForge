@@ -29,6 +29,15 @@
   --radius-sm:10px;
   --gap:16px;
   --gap-lg:24px;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-8:32px;
+  --section-gap:20px;
+  --tight:8px;
   --font-title:1.75rem;
   --font-body:1.0625rem;
   --font-num:1.35rem;
@@ -37,6 +46,7 @@
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
+::selection{background:var(--accent-soft);color:var(--ink)}
 body{
   margin:0;
   background:var(--paper);
@@ -45,13 +55,15 @@ body{
   font-size:var(--font-body);
   line-height:1.65;
 }
+h1,h2,h3{text-wrap:balance}
+input,textarea{caret-color:var(--accent-strong)}
 a{color:var(--accent-strong)}
-.wrap{max-width:960px;margin:0 auto;padding:0 18px 80px}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px 88px}
 header.topbar{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:18px 0 8px;
+  padding:18px 0 12px;flex-wrap:wrap;row-gap:12px;
 }
-.brand{display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 260px}
 .brand-mark{width:46px;height:46px;flex:0 0 46px}
 .brand h1{font-size:1.35rem;margin:0;line-height:1.25}
 .brand p{margin:0;color:var(--ink-soft);font-size:.92rem}
@@ -65,7 +77,7 @@ header.topbar{
 .btn-primary{background:var(--accent-strong);color:#fff;border-color:#5F3D0B}
 .btn-primary:not(:disabled):hover{background:#5F3D0B}
 .btn-ghost{background:var(--paper-2);border-color:var(--line);color:var(--ink)}
-.btn-small{padding:8px 14px;min-height:42px;font-size:.95rem}
+.btn-small{padding:8px 14px;min-height:48px;font-size:.95rem}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:8px}
 .btn-pulse{position:relative}
 .btn-pulse:not(:disabled)::after{
@@ -81,19 +93,25 @@ header.topbar{
 }
 .card{
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  box-shadow:var(--shadow);padding:22px;
+  box-shadow:var(--shadow);padding:24px;
+  display:flex;flex-direction:column;gap:var(--section-gap);
 }
+.card>*{margin-top:0;margin-bottom:0}
+.card h2{font-size:1.5rem;line-height:1.35;letter-spacing:-.01em;margin:0}
+.card h3{margin:0;font-size:1.12rem;line-height:1.4}
+.card h2+p{margin-top:calc(var(--tight) * -1)}
+.meta{display:flex;flex-direction:column;gap:var(--space-2)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-@media (max-width:680px){.grid-2{grid-template-columns:1fr}.wrap{padding-bottom:64px}}
+@media (max-width:680px){.grid-2{grid-template-columns:1fr}.wrap{padding:0 16px 72px}.card{padding:18px}}
 .screen{display:none}
 .screen.active{display:block;animation:fade-in .25s ease}
 @keyframes fade-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.progress{display:flex;align-items:center;gap:10px;margin:14px 0}
+.progress{display:flex;align-items:center;gap:10px;margin:0}
 .progress-track{flex:1;height:12px;background:#EEE3CB;border-radius:999px;overflow:hidden}
 .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#D9A441,#B7791F);border-radius:999px;transition:width .3s ease}
 .badge{display:inline-block;background:var(--accent-soft);border:1px solid var(--line);color:var(--accent-strong);border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9rem}
-.score-line{display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--ink-soft);font-size:.95rem}
-.grade-cards{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin:16px 0}
+.score-line{display:flex;gap:10px;flex-wrap:wrap;row-gap:6px;align-items:center;color:var(--ink-soft);font-size:.95rem}
+.grade-cards{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin:0}
 @media (max-width:560px){.grade-cards{grid-template-columns:1fr}}
 .grade-card{
   text-align:left;background:var(--paper-2);border:2px solid var(--line);
@@ -106,31 +124,34 @@ header.topbar{
 .frac .fn{padding:0 .35em}
 .frac .fd{border-top:2.5px solid currentColor;padding:0 .35em}
 .frac-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.shape-row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin:14px 0}
-.shape-box{flex:1 1 240px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;text-align:center}
-.shape-box h4{margin:0 0 8px;font-size:1rem;color:var(--ink-soft)}
-.stepper{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.shape-row{display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:stretch;margin:0}
+.shape-box{flex:1 1 240px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.shape-box h3{margin:0;font-size:1rem;color:var(--ink-soft);font-weight:700}
+.shape-box p{margin:0}
+.shape-box>div{display:flex;justify-content:center;width:100%}
+.stepper{display:flex;align-items:center;gap:var(--space-3);justify-content:center;margin:0;flex-wrap:wrap}
 .stepper output{font-size:var(--font-num);font-weight:800;min-width:3.2em;text-align:center}
 .pie-btn{cursor:pointer}
-.feedback{min-height:3.2em;border-radius:var(--radius-sm);padding:12px 14px;margin:12px 0;border:1px solid var(--line);background:var(--paper-2)}
+.feedback{min-height:3.2em;border-radius:var(--radius-sm);padding:12px 14px;margin:0;border:1px solid var(--line);background:var(--paper-2)}
 .feedback.good{background:var(--good-soft);border-color:#9AD6AC;color:#0D3B21}
 .feedback.bad{background:var(--warn-soft);border-color:#F0B97E;color:#5F2D05}
-.hint-box{background:#FFF8E6;border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:12px 14px;margin:10px 0}
-.steps{margin:10px 0 0;padding-left:1.2em}
+.hint-box{background:#FFF8E6;border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:12px 14px;margin:0}
+.steps{margin:0;padding-left:1.2em}
 .steps li{margin:4px 0}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.field{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:0;padding-top:var(--space-4);border-top:1px dashed var(--line)}
+.field{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0}
 input[type="text"],input[type="number"]{
   font-size:1.1rem;padding:10px 12px;border-radius:10px;border:2px solid var(--line);
   background:#fff;color:var(--ink);min-height:48px;max-width:100%;
 }
-.answer-input{width:7em;text-align:center}
-.cmp-btns{display:flex;gap:12px;margin:12px 0}
+.answer-input{width:7em;text-align:center;flex:0 1 9em}
+#formC button[type="submit"]{flex:0 0 auto}
+.cmp-btns{display:flex;gap:12px;margin:0;justify-content:center;flex-wrap:wrap}
 .cmp-btns .btn{font-size:1.6rem;min-width:76px}
 .cmp-btns .btn[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent-strong)}
-.result-big{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.result-big{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin:0}
 .result-score{font-size:2.4rem;font-weight:800;margin:0}
-.review-list{list-style:none;margin:12px 0;padding:0;display:grid;gap:10px}
+.review-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .review-list li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper-2)}
 .modal-backdrop{position:fixed;inset:0;background:rgba(43,38,32,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
 .modal-backdrop.open{display:flex}
@@ -142,8 +163,8 @@ input[type="text"],input[type="number"]{
 .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
 .skip-link:focus{left:12px;top:12px;width:auto;height:auto;background:#fff;padding:10px 14px;z-index:99;border-radius:8px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.howto{margin:12px 0;padding-left:1.2em;color:var(--ink-soft)}
-footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:center}
+.howto{margin:0;padding-left:1.2em;color:var(--ink-soft);display:grid;gap:6px}
+footer.foot{margin-top:var(--space-6);color:var(--ink-soft);font-size:.88rem;text-align:center}
 .pie-slice:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .selftest-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.95rem}
 .selftest-table th,.selftest-table td{border:1px solid var(--line);padding:8px 10px;text-align:left}
@@ -154,6 +175,14 @@ footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:ce
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
   .btn-pulse:not(:disabled)::after{display:none}
   .screen.active{animation:none}
+}
+@media (max-width:480px){
+  .shape-row{flex-direction:column}
+  .shape-box{flex:1 1 auto}
+  .cmp-btns .btn{flex:1 1 0;min-width:0}
+  #formC{flex-direction:column;align-items:stretch}
+  #formC .answer-input{width:100%;flex:1 1 auto}
+  #formC button[type="submit"]{width:100%}
 }
 @media (prefers-contrast: more){
   .btn-primary{background:#6B4408;border-color:#3F2703}
@@ -187,7 +216,7 @@ footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:ce
     <section class="screen" data-screen="start" aria-labelledby="startTitle">
       <div class="card">
         <span class="badge">오프라인 · 로그인 없음 · 기록은 이 기기에만</span>
-        <h2 id="startTitle" style="font-size:var(--font-title);margin:12px 0 6px">학년을 고르고 분수 모험을 시작해요</h2>
+        <h2 id="startTitle" style="font-size:var(--font-title)">학년을 고르고 분수 모험을 시작해요</h2>
         <p style="margin:0;color:var(--ink-soft)">3학년은 분수가 무엇인지, 크기를 어떻게 비교하는지 배워요. 4학년은 분모가 같은 덧셈과 뺄셈을 연습해요.</p>
         <div class="grade-cards" role="group" aria-label="학년 선택">
           <button type="button" class="grade-card" id="grade3" aria-pressed="true">
@@ -206,7 +235,7 @@ footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:ce
           <button type="button" class="btn btn-ghost" id="btnResume" hidden>이어서 하기</button>
           <button type="button" class="btn btn-ghost btn-small" id="btnReset">기록 지우기</button>
         </div>
-        <h3 style="margin-top:20px">이렇게 해요</h3>
+        <h3>이렇게 해요</h3>
         <ol class="howto">
           <li><strong>똑같이 나누기:</strong> 원과 막대를 눌러서 조각을 색칠해 보세요.</li>
           <li><strong>어느 게 클까:</strong> 두 분수를 보고 <span aria-hidden="true">&gt; &lt; =</span><span class="sr-only">크다, 작다, 같다</span> 중에서 고르세요.</li>
@@ -219,20 +248,20 @@ footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:ce
     <!-- 활동 A -->
     <section class="screen" data-screen="A" aria-labelledby="titleA">
       <div class="card">
-        <div class="score-line"><span class="badge">활동 A · 똑같이 나누기</span><span id="progA">1 / 3</span><span id="scoreA">점수 0</span></div>
+        <div class="meta"><div class="score-line"><span class="badge">활동 A · 똑같이 나누기</span><span id="progA">1 / 3</span><span id="scoreA">점수 0</span></div>
+        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barA"></div></div></div></div>
         <h2 id="titleA">목표 조각을 만들어 보세요</h2>
-        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barA"></div></div></div>
         <p id="promptA">목표:</p>
-        <div class="shape-row">
-          <div class="shape-box"><h4>원 파이 (눌러서 색칠)</h4><div id="pieA"></div></div>
-          <div class="shape-box"><h4>막대 (눌러서 색칠)</h4><div id="barBoxA"></div></div>
-        </div>
         <div class="stepper" role="group" aria-label="분모 조절">
           <button type="button" class="btn btn-ghost btn-small" id="denMinusA">분모 −1</button>
           <output id="denOutA" aria-live="polite">4등분</output>
           <button type="button" class="btn btn-ghost btn-small" id="denPlusA">분모 +1</button>
         </div>
-        <p style="text-align:center;margin:4px 0">지금 모양: <span id="curFracA"></span></p>
+        <div class="shape-row">
+          <div class="shape-box"><h3>원 파이 (눌러서 색칠)</h3><div id="pieA"></div></div>
+          <div class="shape-box"><h3>막대 (눌러서 색칠)</h3><div id="barBoxA"></div></div>
+        </div>
+        <p style="text-align:center;margin:0">지금 모양: <span id="curFracA"></span></p>
         <div class="feedback" id="fbA" aria-live="polite">조각을 눌러 색칠해 보세요. 분모는 몇 조각으로 나누었는지, 분자는 몇 조각을 색칠했는지예요.</div>
         <div class="toolbar">
           <button type="button" class="btn btn-primary btn-pulse" id="btnCheckA">확인하기</button>
@@ -245,15 +274,15 @@ footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:ce
     <!-- 활동 B -->
     <section class="screen" data-screen="B" aria-labelledby="titleB">
       <div class="card">
-        <div class="score-line"><span class="badge">활동 B · 어느 게 클까</span><span id="progB">1 / 4</span><span id="scoreB">점수 0</span></div>
+        <div class="meta"><div class="score-line"><span class="badge">활동 B · 어느 게 클까</span><span id="progB">1 / 4</span><span id="scoreB">점수 0</span></div>
+        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barB"></div></div></div></div>
         <h2 id="titleB">어느 분수가 더 클까요?</h2>
-        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barB"></div></div></div>
         <p id="promptB">두 카드를 보고 골라 보세요.</p>
         <div class="shape-row">
-          <div class="shape-box"><h4 id="labelB1">왼쪽 분수</h4><div id="pieB1"></div><p id="valB1"></p></div>
-          <div class="shape-box"><h4 id="labelB2">오른쪽 분수</h4><div id="pieB2"></div><p id="valB2"></p></div>
+          <div class="shape-box"><h3 id="labelB1">왼쪽 분수</h3><div id="pieB1"></div><p id="valB1"></p></div>
+          <div class="shape-box"><h3 id="labelB2">오른쪽 분수</h3><div id="pieB2"></div><p id="valB2"></p></div>
         </div>
-        <div class="shape-box" style="flex-basis:100%"><h4>숫자선으로 보기</h4><div id="lineB"></div></div>
+        <div class="shape-box" style="flex-basis:100%"><h3>숫자선으로 보기</h3><div id="lineB"></div></div>
         <div class="cmp-btns" role="group" aria-label="크기 비교 답 고르기">
           <button type="button" class="btn btn-ghost" data-cmp="-1" aria-pressed="false" aria-label="왼쪽이 작다">&lt;</button>
           <button type="button" class="btn btn-ghost" data-cmp="0" aria-pressed="false" aria-label="같다">=</button>
@@ -274,13 +303,13 @@ footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:ce
     <!-- 활동 C -->
     <section class="screen" data-screen="C" aria-labelledby="titleC">
       <div class="card">
-        <div class="score-line"><span class="badge">활동 C · 조각 모으기</span><span id="progC">1 / 4</span><span id="scoreC">점수 0</span></div>
+        <div class="meta"><div class="score-line"><span class="badge">활동 C · 조각 모으기</span><span id="progC">1 / 4</span><span id="scoreC">점수 0</span></div>
+        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barC"></div></div></div></div>
         <h2 id="titleC">덧셈과 뺄셈을 해 보세요</h2>
-        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barC"></div></div></div>
         <p id="promptC" style="font-size:1.25rem;font-weight:800">식</p>
         <div class="shape-row">
-          <div class="shape-box"><h4>첫째 조각</h4><div id="pieC1"></div></div>
-          <div class="shape-box"><h4>둘째 조각</h4><div id="pieC2"></div></div>
+          <div class="shape-box"><h3>첫째 조각</h3><div id="pieC1"></div></div>
+          <div class="shape-box"><h3>둘째 조각</h3><div id="pieC2"></div></div>
         </div>
         <form id="formC" class="field" autocomplete="off">
           <label for="inputC"><strong>답:</strong> <span style="color:var(--ink-soft)">예) 3/4, 1/2, 1</span></label>
@@ -697,7 +726,7 @@ function show(name){
 /* ---------------- 업데이트 내역 모달 ---------------- */
 var UPDATE_ENTRIES = [
   { date: '2026-11-05', items: ['프로젝트를 처음 만들었어요. 이름은 분수 공작소(FractionForge)로 정했어요.', '어떻게 만들지 적은 구현 계획서를 넣었어요.', '인터넷 없이 index.html 파일 하나로 실행되도록 계획했어요.'] },
-  { date: '2026-11-06', items: ['앱을 처음 완성했어요: 시작 → 활동 A(똑같이 나누기) → 활동 B(어느 게 클까) → 활동 C(조각 모으기) → 결과 화면까지 이어져요.', '정답은 사람이 미리 적어 두지 않고, 분수 계산 엔진이 직접 계산해요.', '원 파이·막대·숫자선 그림을 앱 안에서 직접 그려요.', '중간에 새로고침해도 점수와 순서가 그대로 이어져요. 결과 화면에서도 그대로 보여요.', '다음 단계 버튼에 금빛 반짝임(펄스)을 넣었어요.', '이 업데이트 내역 팝업을 시작 화면에 넣었어요.', '계산기가 스스로 검사하는 ?selftest=1 화면을 넣었어요.', '활동 A에서 틀린 시도도 기록해서 "n번 만에 맞혔어요!"를 보여줘요.', '작은 휴대폰 화면에서도 깨지지 않고, 글자를 더 진하게 했어요.', '선생님용 안내서(README.md)를 넣었어요.', '깃허브에 올리고 배포했어요. 주소: https://WBmaker2.github.io/FractionForge/', '활동 B에서 1이 나오던 문제를 고쳤어요.', '꽉 찬 원 그림이 선처럼 보이던 것을 고쳤어요.', '덧셈에서 분모까지 더하면 알려줘요.'] }
+  { date: '2026-11-06', items: ['앱을 처음 완성했어요: 시작 → 활동 A(똑같이 나누기) → 활동 B(어느 게 클까) → 활동 C(조각 모으기) → 결과 화면까지 이어져요.', '정답은 사람이 미리 적어 두지 않고, 분수 계산 엔진이 직접 계산해요.', '원 파이·막대·숫자선 그림을 앱 안에서 직접 그려요.', '중간에 새로고침해도 점수와 순서가 그대로 이어져요. 결과 화면에서도 그대로 보여요.', '다음 단계 버튼에 금빛 반짝임(펄스)을 넣었어요.', '이 업데이트 내역 팝업을 시작 화면에 넣었어요.', '계산기가 스스로 검사하는 ?selftest=1 화면을 넣었어요.', '활동 A에서 틀린 시도도 기록해서 "n번 만에 맞혔어요!"를 보여줘요.', '작은 휴대폰 화면에서도 깨지지 않고, 글자를 더 진하게 했어요.', '선생님용 안내서(README.md)를 넣었어요.', '깃허브에 올리고 배포했어요. 주소: https://WBmaker2.github.io/FractionForge/', '활동 B에서 1이 나오던 문제를 고쳤어요.', '꽉 찬 원 그림이 선처럼 보이던 것을 고쳤어요.', '덧셈에서 분모까지 더하면 알려줘요.', '[화면 정리] 활동 화면 순서를 상태 → 제목 → 문제 → 조작 → 피드백 → 다음으로 정리했어요.', '[화면 정리] 활동 A 분모 버튼을 도형 위로 올렸어요.', '[화면 정리] 작은 휴대폰에서 입력칸과 버튼이 세로로 쌓이도록 고쳤어요.'] }
 ];
 function renderUpdates(){
   var box = document.getElementById('updateList');
