@@ -71,7 +71,7 @@ header.topbar{
   appearance:none;border:2px solid transparent;border-radius:999px;
   padding:12px 22px;font-size:1.02rem;font-weight:700;line-height:1.2;
   cursor:pointer;background:#EFE7D3;color:var(--ink);
-  min-height:48px;
+  min-height:48px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn-primary{background:var(--accent-strong);color:#fff;border-color:#5F3D0B}
@@ -126,11 +126,14 @@ header.topbar{
 .frac-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .shape-row{display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:stretch;margin:0}
 .shape-box{flex:1 1 240px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.shape-box svg{width:100%;height:auto;max-width:230px}
+#barBoxA svg{max-width:340px}
 .shape-box h3{margin:0;font-size:1rem;color:var(--ink-soft);font-weight:700}
 .shape-box p{margin:0}
 .shape-box>div{display:flex;justify-content:center;width:100%}
 .stepper{display:flex;align-items:center;gap:var(--space-3);justify-content:center;margin:0;flex-wrap:wrap}
 .stepper output{font-size:var(--font-num);font-weight:800;min-width:3.2em;text-align:center}
+.pie-slice{cursor:pointer;touch-action:manipulation}
 .pie-btn{cursor:pointer}
 .feedback{min-height:3.2em;border-radius:var(--radius-sm);padding:12px 14px;margin:0;border:1px solid var(--line);background:var(--paper-2)}
 .feedback.good{background:var(--good-soft);border-color:#9AD6AC;color:#0D3B21}
@@ -726,7 +729,7 @@ function show(name){
 /* ---------------- 업데이트 내역 모달 ---------------- */
 var UPDATE_ENTRIES = [
   { date: '2026-11-05', items: ['프로젝트를 처음 만들었어요. 이름은 분수 공작소(FractionForge)로 정했어요.', '어떻게 만들지 적은 구현 계획서를 넣었어요.', '인터넷 없이 index.html 파일 하나로 실행되도록 계획했어요.'] },
-  { date: '2026-11-06', items: ['앱을 처음 완성했어요: 시작 → 활동 A(똑같이 나누기) → 활동 B(어느 게 클까) → 활동 C(조각 모으기) → 결과 화면까지 이어져요.', '정답은 사람이 미리 적어 두지 않고, 분수 계산 엔진이 직접 계산해요.', '원 파이·막대·숫자선 그림을 앱 안에서 직접 그려요.', '중간에 새로고침해도 점수와 순서가 그대로 이어져요. 결과 화면에서도 그대로 보여요.', '다음 단계 버튼에 금빛 반짝임(펄스)을 넣었어요.', '이 업데이트 내역 팝업을 시작 화면에 넣었어요.', '계산기가 스스로 검사하는 ?selftest=1 화면을 넣었어요.', '활동 A에서 틀린 시도도 기록해서 "n번 만에 맞혔어요!"를 보여줘요.', '작은 휴대폰 화면에서도 깨지지 않고, 글자를 더 진하게 했어요.', '선생님용 안내서(README.md)를 넣었어요.', '깃허브에 올리고 배포했어요. 주소: https://WBmaker2.github.io/FractionForge/', '활동 B에서 1이 나오던 문제를 고쳤어요.', '꽉 찬 원 그림이 선처럼 보이던 것을 고쳤어요.', '덧셈에서 분모까지 더하면 알려줘요.', '[화면 정리] 활동 화면 순서를 상태 → 제목 → 문제 → 조작 → 피드백 → 다음으로 정리했어요.', '[화면 정리] 활동 A 분모 버튼을 도형 위로 올렸어요.', '[화면 정리] 작은 휴대폰에서 입력칸과 버튼이 세로로 쌓이도록 고쳤어요.'] }
+  { date: '2026-11-06', items: ['앱을 처음 완성했어요: 시작 → 활동 A(똑같이 나누기) → 활동 B(어느 게 클까) → 활동 C(조각 모으기) → 결과 화면까지 이어져요.', '정답은 사람이 미리 적어 두지 않고, 분수 계산 엔진이 직접 계산해요.', '원 파이·막대·숫자선 그림을 앱 안에서 직접 그려요.', '중간에 새로고침해도 점수와 순서가 그대로 이어져요. 결과 화면에서도 그대로 보여요.', '다음 단계 버튼에 금빛 반짝임(펄스)을 넣었어요.', '이 업데이트 내역 팝업을 시작 화면에 넣었어요.', '계산기가 스스로 검사하는 ?selftest=1 화면을 넣었어요.', '활동 A에서 틀린 시도도 기록해서 "n번 만에 맞혔어요!"를 보여줘요.', '작은 휴대폰 화면에서도 깨지지 않고, 글자를 더 진하게 했어요.', '선생님용 안내서(README.md)를 넣었어요.', '깃허브에 올리고 배포했어요. 주소: https://WBmaker2.github.io/FractionForge/', '활동 B에서 1이 나오던 문제를 고쳤어요.', '꽉 찬 원 그림이 선처럼 보이던 것을 고쳤어요.', '덧셈에서 분모까지 더하면 알려줘요.', '[화면 정리] 활동 화면 순서를 상태 → 제목 → 문제 → 조작 → 피드백 → 다음으로 정리했어요.', '[화면 정리] 활동 A 분모 버튼을 도형 위로 올렸어요.', '[화면 정리] 작은 휴대폰에서 입력칸과 버튼이 세로로 쌓이도록 고쳤어요.', '[손가락 배려] 도형 그림이 화면에 맞게 커져서 누르기 쉬워졌어요.', '[손가락 배려] 태블릿에서 빨리 두 번 눌러도 화면이 확대되지 않아요.'] }
 ];
 function renderUpdates(){
   var box = document.getElementById('updateList');
