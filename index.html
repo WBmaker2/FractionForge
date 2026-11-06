@@ -63,7 +63,7 @@ header.topbar{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:18px 0 12px;flex-wrap:wrap;row-gap:12px;
 }
-.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 260px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 260px;background:none;border:none;padding:4px 8px;margin:-4px -8px;font:inherit;color:inherit;text-align:left;cursor:pointer;border-radius:12px}
 .brand-mark{width:46px;height:46px;flex:0 0 46px}
 .brand h1{font-size:1.35rem;margin:0;line-height:1.25}
 .brand p{margin:0;color:var(--ink-soft);font-size:.92rem}
@@ -197,7 +197,7 @@ footer.foot{margin-top:var(--space-6);color:var(--ink-soft);font-size:.88rem;tex
 <a class="skip-link" href="#main">본문으로 건너뛰기</a>
 <div class="wrap">
   <header class="topbar">
-    <div class="brand">
+    <button type="button" class="brand" id="btnBrand" aria-label="시작 화면으로 돌아가기">
       <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="분수 공작소 로고: 4등분된 원">
         <circle cx="24" cy="24" r="21" fill="#FFFDF7" stroke="#8F5E12" stroke-width="2.5"/>
         <path d="M24 3 A21 21 0 0 1 45 24 L24 24 Z" fill="#FFD166"/>
@@ -210,7 +210,7 @@ footer.foot{margin-top:var(--space-6);color:var(--ink-soft);font-size:.88rem;tex
         <h1>분수 공작소 <span lang="en">FractionForge</span></h1>
         <p>초등 3~4학년 · 직접 나누고 모으며 배우는 분수</p>
       </div>
-    </div>
+    </button>
     <button type="button" class="btn btn-ghost btn-small" id="btnUpdateLog" aria-haspopup="dialog">업데이트 내역</button>
   </header>
 
@@ -729,7 +729,7 @@ function show(name){
 /* ---------------- 업데이트 내역 모달 ---------------- */
 var UPDATE_ENTRIES = [
   { date: '2026-11-05', items: ['프로젝트를 처음 만들었어요. 이름은 분수 공작소(FractionForge)로 정했어요.', '어떻게 만들지 적은 구현 계획서를 넣었어요.', '인터넷 없이 index.html 파일 하나로 실행되도록 계획했어요.'] },
-  { date: '2026-11-06', items: ['앱을 처음 완성했어요: 시작 → 활동 A(똑같이 나누기) → 활동 B(어느 게 클까) → 활동 C(조각 모으기) → 결과 화면까지 이어져요.', '정답은 사람이 미리 적어 두지 않고, 분수 계산 엔진이 직접 계산해요.', '원 파이·막대·숫자선 그림을 앱 안에서 직접 그려요.', '중간에 새로고침해도 점수와 순서가 그대로 이어져요. 결과 화면에서도 그대로 보여요.', '다음 단계 버튼에 금빛 반짝임(펄스)을 넣었어요.', '이 업데이트 내역 팝업을 시작 화면에 넣었어요.', '계산기가 스스로 검사하는 ?selftest=1 화면을 넣었어요.', '활동 A에서 틀린 시도도 기록해서 "n번 만에 맞혔어요!"를 보여줘요.', '작은 휴대폰 화면에서도 깨지지 않고, 글자를 더 진하게 했어요.', '선생님용 안내서(README.md)를 넣었어요.', '깃허브에 올리고 배포했어요. 주소: https://WBmaker2.github.io/FractionForge/', '활동 B에서 1이 나오던 문제를 고쳤어요.', '꽉 찬 원 그림이 선처럼 보이던 것을 고쳤어요.', '덧셈에서 분모까지 더하면 알려줘요.', '[화면 정리] 활동 화면 순서를 상태 → 제목 → 문제 → 조작 → 피드백 → 다음으로 정리했어요.', '[화면 정리] 활동 A 분모 버튼을 도형 위로 올렸어요.', '[화면 정리] 작은 휴대폰에서 입력칸과 버튼이 세로로 쌓이도록 고쳤어요.', '[손가락 배려] 도형 그림이 화면에 맞게 커져서 누르기 쉬워졌어요.', '[손가락 배려] 태블릿에서 빨리 두 번 눌러도 화면이 확대되지 않아요.'] }
+  { date: '2026-11-06', items: ['앱을 처음 완성했어요: 시작 → 활동 A(똑같이 나누기) → 활동 B(어느 게 클까) → 활동 C(조각 모으기) → 결과 화면까지 이어져요.', '정답은 사람이 미리 적어 두지 않고, 분수 계산 엔진이 직접 계산해요.', '원 파이·막대·숫자선 그림을 앱 안에서 직접 그려요.', '중간에 새로고침해도 점수와 순서가 그대로 이어져요. 결과 화면에서도 그대로 보여요.', '다음 단계 버튼에 금빛 반짝임(펄스)을 넣었어요.', '이 업데이트 내역 팝업을 시작 화면에 넣었어요.', '계산기가 스스로 검사하는 ?selftest=1 화면을 넣었어요.', '활동 A에서 틀린 시도도 기록해서 "n번 만에 맞혔어요!"를 보여줘요.', '작은 휴대폰 화면에서도 깨지지 않고, 글자를 더 진하게 했어요.', '선생님용 안내서(README.md)를 넣었어요.', '깃허브에 올리고 배포했어요. 주소: https://WBmaker2.github.io/FractionForge/', '활동 B에서 1이 나오던 문제를 고쳤어요.', '꽉 찬 원 그림이 선처럼 보이던 것을 고쳤어요.', '덧셈에서 분모까지 더하면 알려줘요.', '[화면 정리] 활동 화면 순서를 상태 → 제목 → 문제 → 조작 → 피드백 → 다음으로 정리했어요.', '[화면 정리] 활동 A 분모 버튼을 도형 위로 올렸어요.', '[화면 정리] 작은 휴대폰에서 입력칸과 버튼이 세로로 쌓이도록 고쳤어요.', '[손가락 배려] 도형 그림이 화면에 맞게 커져서 누르기 쉬워졌어요.', '[손가락 배려] 태블릿에서 빨리 두 번 눌러도 화면이 확대되지 않아요.', '제목을 누르면 시작 화면으로 돌아가요.'] }
 ];
 function renderUpdates(){
   var box = document.getElementById('updateList');
@@ -759,6 +759,12 @@ function modalKeys(e){
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   }
 }
+/* 제목(로고)을 누르면 시작 화면으로 돌아간다. 진행 기록은 지우지 않고, 이어하기 버튼으로 돌려준다. */
+document.getElementById('btnBrand').addEventListener('click', function(){
+  refreshBestLabels();
+  updateResumeBtn();
+  show('start');
+});
 document.getElementById('btnUpdateLog').addEventListener('click', openModal);
 document.getElementById('btnCloseModal').addEventListener('click', closeModal);
 modalBg.addEventListener('click', function(e){ if(e.target === modalBg) closeModal(); });
