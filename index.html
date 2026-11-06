@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="분수 공작소 FractionForge — 초등 3~4학년 분수 개념·크기 비교·덧셈 뺄셈을 직접 조작하며 배우는 오프라인 웹앱">
+<title>분수 공작소 FractionForge</title>
+<style>
+:root{
+  --paper:#FBF6EC;
+  --paper-2:#FFFDF7;
+  --card:#FFFFFF;
+  --ink:#2B2620;
+  --ink-soft:#6B6257;
+  --line:#E7DCC6;
+  --accent:#B7791F;
+  --accent-strong:#8F5E12;
+  --accent-soft:#F7E8C8;
+  --good:#1E7E46;
+  --good-soft:#DDF2E3;
+  --warn:#C2570B;
+  --warn-soft:#FDEBD3;
+  --piece-1:#FFD166;
+  --piece-2:#8ECAE6;
+  --piece-3:#B5E48C;
+  --piece-4:#FFB3C1;
+  --piece-5:#CDB4DB;
+  --radius:16px;
+  --radius-sm:10px;
+  --gap:16px;
+  --gap-lg:24px;
+  --font-title:1.75rem;
+  --font-body:1.0625rem;
+  --font-num:1.35rem;
+  --shadow:0 6px 24px rgba(80,60,20,.10);
+  --focus:#1A73E8;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  font-size:var(--font-body);
+  line-height:1.65;
+}
+a{color:var(--accent-strong)}
+.wrap{max-width:960px;margin:0 auto;padding:0 18px 80px}
+header.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:18px 0 8px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:46px;height:46px;flex:0 0 46px}
+.brand h1{font-size:1.35rem;margin:0;line-height:1.25}
+.brand p{margin:0;color:var(--ink-soft);font-size:.92rem}
+.btn{
+  appearance:none;border:2px solid transparent;border-radius:999px;
+  padding:12px 22px;font-size:1.02rem;font-weight:700;line-height:1.2;
+  cursor:pointer;background:#EFE7D3;color:var(--ink);
+  min-height:48px;
+}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--accent-strong);color:#fff;border-color:#5F3D0B}
+.btn-primary:not(:disabled):hover{background:#5F3D0B}
+.btn-ghost{background:var(--paper-2);border-color:var(--line);color:var(--ink)}
+.btn-small{padding:8px 14px;min-height:42px;font-size:.95rem}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:8px}
+.btn-pulse{position:relative}
+.btn-pulse:not(:disabled)::after{
+  content:"";position:absolute;inset:-6px;border-radius:999px;
+  border:3px solid rgba(183,121,31,.75);
+  animation:pulse-ring 1.8s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes pulse-ring{
+  0%{transform:scale(.96);opacity:.95}
+  70%{transform:scale(1.06);opacity:0}
+  100%{transform:scale(1.06);opacity:0}
+}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+@media (max-width:680px){.grid-2{grid-template-columns:1fr}.wrap{padding-bottom:64px}}
+.screen{display:none}
+.screen.active{display:block;animation:fade-in .25s ease}
+@keyframes fade-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.progress{display:flex;align-items:center;gap:10px;margin:14px 0}
+.progress-track{flex:1;height:12px;background:#EEE3CB;border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#D9A441,#B7791F);border-radius:999px;transition:width .3s ease}
+.badge{display:inline-block;background:var(--accent-soft);border:1px solid var(--line);color:var(--accent-strong);border-radius:999px;padding:4px 12px;font-weight:700;font-size:.9rem}
+.score-line{display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--ink-soft);font-size:.95rem}
+.grade-cards{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin:16px 0}
+@media (max-width:560px){.grade-cards{grid-template-columns:1fr}}
+.grade-card{
+  text-align:left;background:var(--paper-2);border:2px solid var(--line);
+  border-radius:var(--radius);padding:18px;cursor:pointer;width:100%;
+}
+.grade-card[aria-pressed="true"]{border-color:var(--accent);background:#FFF8E6;box-shadow:var(--shadow)}
+.grade-card h3{margin:0 0 6px;font-size:1.15rem}
+.grade-card p{margin:0;color:var(--ink-soft);font-size:.94rem}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;font-weight:800;font-size:1.15em;line-height:1.15}
+.frac .fn{padding:0 .35em}
+.frac .fd{border-top:2.5px solid currentColor;padding:0 .35em}
+.frac-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.shape-row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin:14px 0}
+.shape-box{flex:1 1 240px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.shape-box h4{margin:0 0 8px;font-size:1rem;color:var(--ink-soft)}
+.stepper{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.stepper output{font-size:var(--font-num);font-weight:800;min-width:3.2em;text-align:center}
+.pie-btn{cursor:pointer}
+.feedback{min-height:3.2em;border-radius:var(--radius-sm);padding:12px 14px;margin:12px 0;border:1px solid var(--line);background:var(--paper-2)}
+.feedback.good{background:var(--good-soft);border-color:#9AD6AC;color:#0D3B21}
+.feedback.bad{background:var(--warn-soft);border-color:#F0B97E;color:#5F2D05}
+.hint-box{background:#FFF8E6;border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:12px 14px;margin:10px 0}
+.steps{margin:10px 0 0;padding-left:1.2em}
+.steps li{margin:4px 0}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.field{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input[type="text"],input[type="number"]{
+  font-size:1.1rem;padding:10px 12px;border-radius:10px;border:2px solid var(--line);
+  background:#fff;color:var(--ink);min-height:48px;max-width:100%;
+}
+.answer-input{width:7em;text-align:center}
+.cmp-btns{display:flex;gap:12px;margin:12px 0}
+.cmp-btns .btn{font-size:1.6rem;min-width:76px}
+.cmp-btns .btn[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent-strong)}
+.result-big{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.result-score{font-size:2.4rem;font-weight:800;margin:0}
+.review-list{list-style:none;margin:12px 0;padding:0;display:grid;gap:10px}
+.review-list li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper-2)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(43,38,32,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:18px;max-width:640px;width:100%;max-height:80vh;overflow:auto;padding:22px;box-shadow:var(--shadow)}
+.modal h2{margin-top:0}
+.update-entry{border-top:1px solid var(--line);padding:10px 0}
+.update-entry h3{margin:0 0 4px;font-size:1.02rem}
+.update-entry ul{margin:6px 0;padding-left:1.2em}
+.skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip-link:focus{left:12px;top:12px;width:auto;height:auto;background:#fff;padding:10px 14px;z-index:99;border-radius:8px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.howto{margin:12px 0;padding-left:1.2em;color:var(--ink-soft)}
+footer.foot{margin-top:26px;color:var(--ink-soft);font-size:.88rem;text-align:center}
+.pie-slice:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.selftest-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.95rem}
+.selftest-table th,.selftest-table td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+.selftest-table th{background:var(--accent-soft)}
+.selftest-pass{color:var(--good);font-weight:800}
+.selftest-fail{color:var(--warn);font-weight:800}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+  .btn-pulse:not(:disabled)::after{display:none}
+  .screen.active{animation:none}
+}
+@media (prefers-contrast: more){
+  .btn-primary{background:#6B4408;border-color:#3F2703}
+  :focus-visible{outline-width:4px}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="분수 공작소 로고: 4등분된 원">
+        <circle cx="24" cy="24" r="21" fill="#FFFDF7" stroke="#8F5E12" stroke-width="2.5"/>
+        <path d="M24 3 A21 21 0 0 1 45 24 L24 24 Z" fill="#FFD166"/>
+        <path d="M45 24 A21 21 0 0 1 24 45 L24 24 Z" fill="#8ECAE6"/>
+        <path d="M24 45 A21 21 0 0 1 3 24 L24 24 Z" fill="#B5E48C"/>
+        <path d="M3 24 A21 21 0 0 1 24 3 L24 24 Z" fill="#FFB3C1"/>
+        <circle cx="24" cy="24" r="3.4" fill="#2B2620"/>
+      </svg>
+      <div>
+        <h1>분수 공작소 <span lang="en">FractionForge</span></h1>
+        <p>초등 3~4학년 · 직접 나누고 모으며 배우는 분수</p>
+      </div>
+    </div>
+    <button type="button" class="btn btn-ghost btn-small" id="btnUpdateLog" aria-haspopup="dialog">업데이트 내역</button>
+  </header>
+
+  <main id="main">
+    <!-- 시작 화면 -->
+    <section class="screen" data-screen="start" aria-labelledby="startTitle">
+      <div class="card">
+        <span class="badge">오프라인 · 로그인 없음 · 기록은 이 기기에만</span>
+        <h2 id="startTitle" style="font-size:var(--font-title);margin:12px 0 6px">학년을 고르고 분수 모험을 시작해요</h2>
+        <p style="margin:0;color:var(--ink-soft)">3학년은 분수가 무엇인지, 크기를 어떻게 비교하는지 배워요. 4학년은 분모가 같은 덧셈과 뺄셈을 연습해요.</p>
+        <div class="grade-cards" role="group" aria-label="학년 선택">
+          <button type="button" class="grade-card" id="grade3" aria-pressed="true">
+            <h3>3학년 · 분수의 첫걸음</h3>
+            <p>똑같이 나누기 · 분모와 분자 · 어느 게 클까 (분모 2~8)</p>
+            <p id="best3" style="margin-top:8px;font-weight:700">최고 점수: 0점</p>
+          </button>
+          <button type="button" class="grade-card" id="grade4" aria-pressed="false">
+            <h3>4학년 · 조각 모으기</h3>
+            <p>같은 분모 덧셈·뺄셈 · 약분 · 크기 비교 (분모 2~12)</p>
+            <p id="best4" style="margin-top:8px;font-weight:700">최고 점수: 0점</p>
+          </button>
+        </div>
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-pulse" id="btnStart">학습 시작하기</button>
+          <button type="button" class="btn btn-ghost" id="btnResume" hidden>이어서 하기</button>
+          <button type="button" class="btn btn-ghost btn-small" id="btnReset">기록 지우기</button>
+        </div>
+        <h3 style="margin-top:20px">이렇게 해요</h3>
+        <ol class="howto">
+          <li><strong>똑같이 나누기:</strong> 원과 막대를 눌러서 조각을 색칠해 보세요.</li>
+          <li><strong>어느 게 클까:</strong> 두 분수를 보고 <span aria-hidden="true">&gt; &lt; =</span><span class="sr-only">크다, 작다, 같다</span> 중에서 고르세요.</li>
+          <li><strong>조각 모으기:</strong> 덧셈·뺄셈 답을 <code>3/4</code>처럼 적어 보세요. <code>1</code>처럼 자연수도 돼요.</li>
+        </ol>
+        <p style="color:var(--ink-soft);font-size:.92rem">인터넷 없이도 돼요. USB에 복사하거나 학교 누리집에 올려서 그대로 쓰세요. 키보드의 Tab과 Enter(스페이스)만으로도 모두 조작할 수 있어요.</p>
+      </div>
+    </section>
+
+    <!-- 활동 A -->
+    <section class="screen" data-screen="A" aria-labelledby="titleA">
+      <div class="card">
+        <div class="score-line"><span class="badge">활동 A · 똑같이 나누기</span><span id="progA">1 / 3</span><span id="scoreA">점수 0</span></div>
+        <h2 id="titleA">목표 조각을 만들어 보세요</h2>
+        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barA"></div></div></div>
+        <p id="promptA">목표:</p>
+        <div class="shape-row">
+          <div class="shape-box"><h4>원 파이 (눌러서 색칠)</h4><div id="pieA"></div></div>
+          <div class="shape-box"><h4>막대 (눌러서 색칠)</h4><div id="barBoxA"></div></div>
+        </div>
+        <div class="stepper" role="group" aria-label="분모 조절">
+          <button type="button" class="btn btn-ghost btn-small" id="denMinusA">분모 −1</button>
+          <output id="denOutA" aria-live="polite">4등분</output>
+          <button type="button" class="btn btn-ghost btn-small" id="denPlusA">분모 +1</button>
+        </div>
+        <p style="text-align:center;margin:4px 0">지금 모양: <span id="curFracA"></span></p>
+        <div class="feedback" id="fbA" aria-live="polite">조각을 눌러 색칠해 보세요. 분모는 몇 조각으로 나누었는지, 분자는 몇 조각을 색칠했는지예요.</div>
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-pulse" id="btnCheckA">확인하기</button>
+          <button type="button" class="btn btn-ghost" id="btnNextA" disabled>다음 문제</button>
+          <button type="button" class="btn btn-ghost" id="btnToBA" disabled>다음 활동으로</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 활동 B -->
+    <section class="screen" data-screen="B" aria-labelledby="titleB">
+      <div class="card">
+        <div class="score-line"><span class="badge">활동 B · 어느 게 클까</span><span id="progB">1 / 4</span><span id="scoreB">점수 0</span></div>
+        <h2 id="titleB">어느 분수가 더 클까요?</h2>
+        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barB"></div></div></div>
+        <p id="promptB">두 카드를 보고 골라 보세요.</p>
+        <div class="shape-row">
+          <div class="shape-box"><h4 id="labelB1">왼쪽 분수</h4><div id="pieB1"></div><p id="valB1"></p></div>
+          <div class="shape-box"><h4 id="labelB2">오른쪽 분수</h4><div id="pieB2"></div><p id="valB2"></p></div>
+        </div>
+        <div class="shape-box" style="flex-basis:100%"><h4>숫자선으로 보기</h4><div id="lineB"></div></div>
+        <div class="cmp-btns" role="group" aria-label="크기 비교 답 고르기">
+          <button type="button" class="btn btn-ghost" data-cmp="-1" aria-pressed="false" aria-label="왼쪽이 작다">&lt;</button>
+          <button type="button" class="btn btn-ghost" data-cmp="0" aria-pressed="false" aria-label="같다">=</button>
+          <button type="button" class="btn btn-ghost" data-cmp="1" aria-pressed="false" aria-label="왼쪽이 크다">&gt;</button>
+        </div>
+        <div class="feedback" id="fbB" aria-live="polite">답을 고른 뒤 “정답 확인하기”를 눌러 보세요.</div>
+        <div class="hint-box" id="hintB" hidden></div>
+        <div class="toolbar">
+          <button type="button" class="btn btn-ghost btn-small" id="btnHintB">힌트 보기</button>
+          <button type="button" class="btn btn-primary btn-pulse" id="btnCheckB" disabled>정답 확인하기</button>
+          <button type="button" class="btn btn-ghost" id="btnNextB" disabled>다음 문제</button>
+          <button type="button" class="btn btn-ghost" id="btnToCB" disabled>다음 활동으로</button>
+        </div>
+        <div id="stepsB"></div>
+      </div>
+    </section>
+
+    <!-- 활동 C -->
+    <section class="screen" data-screen="C" aria-labelledby="titleC">
+      <div class="card">
+        <div class="score-line"><span class="badge">활동 C · 조각 모으기</span><span id="progC">1 / 4</span><span id="scoreC">점수 0</span></div>
+        <h2 id="titleC">덧셈과 뺄셈을 해 보세요</h2>
+        <div class="progress" aria-hidden="true"><div class="progress-track"><div class="progress-fill" id="barC"></div></div></div>
+        <p id="promptC" style="font-size:1.25rem;font-weight:800">식</p>
+        <div class="shape-row">
+          <div class="shape-box"><h4>첫째 조각</h4><div id="pieC1"></div></div>
+          <div class="shape-box"><h4>둘째 조각</h4><div id="pieC2"></div></div>
+        </div>
+        <form id="formC" class="field" autocomplete="off">
+          <label for="inputC"><strong>답:</strong> <span style="color:var(--ink-soft)">예) 3/4, 1/2, 1</span></label>
+          <input type="text" id="inputC" class="answer-input" inputmode="text" placeholder="3/4" aria-describedby="fbC">
+          <button type="submit" class="btn btn-primary btn-pulse" id="btnSubmitC">답 제출하기</button>
+        </form>
+        <div class="feedback" id="fbC" aria-live="polite">답을 쓰고 제출해 보세요. 분모가 0이거나 빈칸이면 버튼이 동작하지 않아요.</div>
+        <div class="hint-box" id="hintC" hidden></div>
+        <div class="toolbar">
+          <button type="button" class="btn btn-ghost btn-small" id="btnHintC">힌트 보기</button>
+          <button type="button" class="btn btn-ghost" id="btnNextC" disabled>다음 문제</button>
+          <button type="button" class="btn btn-primary btn-pulse" id="btnToResultC" disabled>결과 보기</button>
+        </div>
+        <div id="stepsC"></div>
+      </div>
+    </section>
+
+    <!-- 결과 -->
+    <section class="screen" data-screen="result" aria-labelledby="titleR">
+      <div class="card">
+        <span class="badge">결과</span>
+        <h2 id="titleR">수고했어요! 결과를 볼까요?</h2>
+        <div class="result-big">
+          <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="획득한 점수 그림">
+            <circle cx="60" cy="60" r="52" fill="#FFF8E6" stroke="#E7DCC6" stroke-width="6"/>
+            <circle id="ringR" cx="60" cy="60" r="52" fill="none" stroke="#B7791F" stroke-width="9" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="326.7" stroke-dashoffset="60"/>
+            <text id="pctR" x="60" y="68" text-anchor="middle" font-size="24" font-weight="800" fill="#2B2620">0%</text>
+          </svg>
+          <div>
+            <p class="result-score" id="totalR">0점 / 11문제</p>
+            <p id="accR" style="margin:0;color:var(--ink-soft)">정답률 0%</p>
+            <p id="bestR" style="margin:4px 0 0;font-weight:700"></p>
+          </div>
+        </div>
+        <h3>틀린 문제 다시 보기</h3>
+        <ul class="review-list" id="reviewR"></ul>
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-pulse" id="btnRetry">다시 하기</button>
+          <button type="button" class="btn btn-ghost btn-pulse" id="btnHome">처음으로 돌아가기</button>
+        </div>
+      </div>
+    </section>
+    <!-- 셀프테스트 (?selftest=1 로 접속) -->
+    <section class="screen" data-screen="selftest" aria-labelledby="titleT">
+      <div class="card">
+        <span class="badge">개발자용 · 연산 엔진 자가 점검</span>
+        <h2 id="titleT">셀프테스트 결과</h2>
+        <p id="selfSummary" aria-live="polite">검사 중…</p>
+        <div id="selfBox"></div>
+        <p style="color:var(--ink-soft);font-size:.9rem">주소 뒤의 <code>?selftest=1</code>을 지우면 평소 학습 화면으로 돌아갑니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>분수 공작소 · 파일 하나, 인터넷 없이 실행 · 기록은 이 기기의 브라우저에만 저장돼요</p>
+  </footer>
+</div>
+
+<div class="modal-backdrop" id="modalBg">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modalBox">
+    <h2 id="modalTitle">업데이트 내역</h2>
+    <p style="color:var(--ink-soft);font-size:.94rem;margin-top:0">처음 만든 날부터 지금까지 무엇을 고쳤는지 오래된 순서대로 보여줘요.</p>
+    <div id="updateList"></div>
+    <div class="toolbar">
+      <button type="button" class="btn btn-primary btn-pulse" id="btnCloseModal">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="sr-only" aria-live="polite" id="live"></div>
+
+<script>
+'use strict';
+/* 페이지 안에서 난 자바스크립트 오류를 모아 둡니다 (?selftest=1 과 브라우저 검증용) */
+window.__ffErrors = [];
+window.addEventListener('error', function(e){ try{ window.__ffErrors.push(String((e && e.message) || e)); }catch(_){} });
+window.addEventListener('unhandledrejection', function(e){ try{ window.__ffErrors.push('rejection: ' + String((e && e.reason) || e)); }catch(_){} });
+/* ============================================================
+   FractionForge — 분수 연산 엔진 (모든 정답은 여기서 계산)
+   분수 = { n, d }, d > 0, 부호는 n에만
+   ============================================================ */
+function gcd(a, b){
+  a = Math.abs(Math.trunc(a)); b = Math.abs(Math.trunc(b));
+  if(a === 0) return b; if(b === 0) return a;
+  while(b !== 0){ var t = a % b; a = b; b = t; }
+  return a || 1;
+}
+function normalize(f){
+  if(!f || !isFinite(f.n) || !isFinite(f.d)) return null;
+  var n = Math.trunc(f.n), d = Math.trunc(f.d);
+  if(d === 0) return null;
+  if(d < 0){ n = -n; d = -d; }
+  if(n === 0) return { n: 0, d: 1 };
+  var g = gcd(n, d);
+  return { n: n / g, d: d / g };
+}
+function add(f1, f2){ return normalize({ n: f1.n * f2.d + f2.n * f1.d, d: f1.d * f2.d }); }
+function subtract(f1, f2){ return normalize({ n: f1.n * f2.d - f2.n * f1.d, d: f1.d * f2.d }); }
+function compare(f1, f2){
+  var l = f1.n * f2.d, r = f2.n * f1.d;
+  if(l > r) return 1; if(l < r) return -1; return 0;
+}
+function equal(f1, f2){
+  var a = normalize(f1), b = normalize(f2);
+  if(!a || !b) return false;
+  return a.n === b.n && a.d === b.d;
+}
+function toMixed(f){
+  var q = normalize(f);
+  if(!q) return null;
+  var whole = Math.trunc(q.n / q.d);
+  var rem = Math.abs(q.n % q.d);
+  return { whole: whole, rem: rem, d: q.d, neg: q.n < 0 && whole === 0 };
+}
+function format(f){
+  var q = normalize(f);
+  if(!q) return '?';
+  if(q.d === 1) return String(q.n);
+  if(Math.abs(q.n) > q.d){
+    var m = toMixed(q);
+    var sign = q.n < 0 ? '-' : '';
+    var w = Math.abs(m.whole);
+    if(m.rem === 0) return sign + String(w);
+    if(w === 0) return sign + m.rem + '/' + m.d;
+    return sign.replace('-','') === '' && q.n < 0 ? ('-' + w + '과 ' + m.rem + '/' + m.d) : (w + '과 ' + m.rem + '/' + m.d);
+  }
+  return q.n + '/' + q.d;
+}
+function fracHTML(f){
+  var q = normalize(f);
+  if(!q) return '<span>?</span>';
+  if(q.d === 1) return '<span>' + q.n + '</span>';
+  if(Math.abs(q.n) > q.d){
+    var m = toMixed(q);
+    var neg = q.n < 0 ? '-' : '';
+    if(m.rem === 0) return '<span>' + neg + Math.abs(m.whole) + '</span>';
+    var wh = Math.abs(m.whole);
+    if(wh === 0) return '<span class="frac" aria-label="' + q.n + '/' + q.d + '"><span class="fn">' + m.rem + '</span><span class="fd">' + m.d + '</span></span>';
+    return '<span>' + neg + wh + '과 </span><span class="frac" aria-label="' + q.n + '/' + q.d + '"><span class="fn">' + m.rem + '</span><span class="fd">' + m.d + '</span></span>';
+  }
+  return '<span class="frac" aria-label="' + q.n + '/' + q.d + '"><span class="fn">' + q.n + '</span><span class="fd">' + q.d + '</span></span>';
+}
+function parse(input){
+  if(input === null || input === undefined) return null;
+  var s = String(input).trim().replace(/\s+/g, '');
+  if(!s) return null;
+  // 대분수 "1과 1/2", "1 1/2", "-1과1/2" 지원
+  var mixed = s.match(/^(-?)(\d+)(?:과|\s)(\d+)\/(\d+)$/);
+  if(mixed){
+    var neg = mixed[1] === '-' ? -1 : 1;
+    var w = parseInt(mixed[2], 10), rn = parseInt(mixed[3], 10), rd = parseInt(mixed[4], 10);
+    if(rd === 0) return null;
+    return normalize({ n: neg * (w * rd + rn), d: rd });
+  }
+  var m2 = s.match(/^(-?)(\d+)\/(\d+)$/);
+  if(m2){
+    var neg2 = m2[1] === '-' ? -1 : 1;
+    var nn = parseInt(m2[2], 10), dd = parseInt(m2[3], 10);
+    if(dd === 0) return null;
+    return normalize({ n: neg2 * nn, d: dd });
+  }
+  var m3 = s.match(/^(-?\d+)$/);
+  if(m3) return normalize({ n: parseInt(m3[1], 10), d: 1 });
+  return null;
+}
+
+/* ---------------- 문항 생성기 ---------------- */
+function randInt(lo, hi){ return lo + Math.floor(Math.random() * (hi - lo + 1)); }
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+function denRange(grade){ return grade === 4 ? [2,12] : [2,8]; }
+
+function makeSplit(grade){
+  var r = denRange(grade);
+  var d = randInt(r[0], r[1]);
+  var n = randInt(1, d - 1);
+  if(d <= 2) n = 1;
+  var goal = normalize({ n: n, d: d });
+  // 보기 좋게: 약분되면 분모가 작은 예쁜 문제 유지
+  return {
+    id: 'split-' + d + '-' + n + '-' + Math.floor(Math.random()*1e6),
+    type: 'split', grade: grade,
+    goal: goal,
+    prompt: '목표: ' + format(goal) + ' 만들기',
+    answer: goal,
+    hints: ['조각을 ' + goal.d + '개로 나누어 보세요. 분모가 조각 수예요.', goal.n + '조각을 색칠해 보세요. 분자가 색칠한 수예요.', '위: 색칠 ' + goal.n + ' / 아래: 전체 ' + goal.d + ' — ' + format(goal) + '이에요.'],
+    steps: ['전체를 ' + goal.d + '등분 했어요.', goal.n + '조각을 색칠했어요.', '그래서 ' + format(goal) + '이 되었어요.']
+  };
+}
+function makeCompare(grade){
+  var r = denRange(grade);
+  var a, b, tries = 0;
+  do{
+    a = normalize({ n: randInt(1, r[1]-1), d: randInt(r[0], r[1]) });
+    b = normalize({ n: randInt(1, r[1]-1), d: randInt(r[0], r[1]) });
+    if(a.n >= a.d) a = normalize({ n: a.n % a.d || 1, d: a.d });
+    if(b.n >= b.d) b = normalize({ n: b.n % b.d || 1, d: b.d });
+    tries++;
+  }while(equal(a,b) && grade === 3 && tries < 20 && Math.random() < 0.7);
+  var c = compare(a, b);
+  var sym = c === 1 ? '>' : (c === -1 ? '<' : '=');
+  // 그럴듯한 오답 힌트용: 분자만 비교하는 실수 언급
+  return {
+    id: 'cmp-' + a.n + '-' + a.d + '-' + b.n + '-' + b.d + '-' + Math.floor(Math.random()*1e6),
+    type: 'compare', grade: grade, f1: a, f2: b, answer: c, symbol: sym,
+    prompt: format(a) + ' □ ' + format(b),
+    hints: [
+      '그림에서 색칠된 부분이 넓은 쪽이 더 커요.',
+      '통분하면 ' + (a.n*b.d) + '/' + (a.d*b.d) + ' 와 ' + (b.n*a.d) + '/' + (b.d*a.d) + ' 이라서 분자만 비교하면 돼요.',
+      '답은 "' + sym + '" 이에요. (' + format(a) + ' ' + sym + ' ' + format(b) + ')'
+    ],
+    steps: [
+      '교차곱으로 비교해요: ' + a.n + '×' + b.d + ' = ' + (a.n*b.d) + ', ' + b.n + '×' + a.d + ' = ' + (b.n*a.d) + '.',
+      '그래서 ' + format(a) + ' ' + sym + ' ' + format(b) + ' 입니다.'
+    ]
+  };
+}
+function makeArith(grade, op){
+  var r = denRange(grade);
+  op = op || (Math.random() < 0.6 ? 'add' : 'sub');
+  var d = randInt(2, r[1]);
+  var x = randInt(1, d - 1), y = randInt(1, d - 1);
+  if(op === 'add' && grade === 3 && x + y > d) y = Math.max(1, d - x - randInt(0,1));
+  if(op === 'sub' && x < y){ var t = x; x = y; y = t; }
+  var f1 = normalize({ n: x, d: d }), f2 = normalize({ n: y, d: d });
+  var ans = op === 'add' ? add(f1, f2) : subtract(f1, f2);
+  var sym = op === 'add' ? '+' : '−';
+  // 흔한 오답: 분자 분모 따로 더하기
+  var trap = op === 'add'
+    ? format(normalize({ n: x + y, d: d })) + ' (분모는 그대로예요. 분자끼리만 더해요)'
+    : format(normalize({ n: x - y, d: d })) + ' (분모는 그대로예요. 분자끼리만 빼요)';
+  return {
+    id: (op === 'add' ? 'add' : 'sub') + '-' + x + '-' + y + '-' + d + '-' + Math.floor(Math.random()*1e6),
+    type: op, grade: grade, f1: f1, f2: f2, answer: ans,
+    prompt: format(f1) + ' ' + sym + ' ' + format(f2) + ' = ?',
+    hints: [
+      '분모가 같으면 분모는 그대로 두고 분자끼리만 ' + (op === 'add' ? '더해요.' : '빼요.'),
+      '분자가 ' + x + (op === 'add' ? ' + ' : ' − ') + y + ' = ' + (op === 'add' ? (x+y) : (x-y)) + ' 이에요. 분모는 ' + d + ' 그대로예요.',
+      '답은 ' + format(ans) + ' 이에요.' + (equal(ans, {n:x+y,d:op==='add'?d:d}) && op==='add' && (x+y)!==ans.n ? '' : '')
+    ],
+    steps: [
+      '분모가 ' + d + '(으)로 같아요. 분모는 그대로 둡니다.',
+      '분자 계산: ' + x + ' ' + (op === 'add' ? '+' : '−') + ' ' + y + ' = ' + (op === 'add' ? (x+y) : (x-y)) + '.',
+      '그래서 답은 ' + format(ans) + ' 입니다. (흔한 실수: 분모까지 더하지 않아요)'
+    ],
+    trapNote: trap
+  };
+}
+/* gradeAnswer: 모든 채점은 이 함수 하나로. { correct, feedback, nextHint } 반환 (계획서 4절 스펙) */
+function gradeAnswer(given, q){
+  if(!q) return { correct: false, feedback: '문제를 찾을 수 없어요.', nextHint: 0 };
+  if(q.type === 'split'){
+    var ok = !!given && equal(given, q.goal);
+    return { correct: ok, nextHint: 0, feedback: ok
+      ? ('정답! ' + format(given) + ' 은 목표 ' + format(q.goal) + ' 와 같아요.')
+      : ('아직 달라요. 지금은 ' + (given ? format(given) : '(없음)') + ', 목표는 ' + format(q.goal) + ' 이에요.') };
+  }
+  if(q.type === 'compare'){
+    var okc = given === q.answer;
+    var sym = given === 1 ? '>' : (given === -1 ? '<' : '=');
+    return { correct: okc, nextHint: 0, feedback: okc
+      ? ('정답! ' + format(q.f1) + ' ' + q.symbol + ' ' + format(q.f2) + ' 맞아요.')
+      : ('아쉬워요. 고른 답은 "' + sym + '" 이지만 정답은 "' + q.symbol + '" 이에요. 아래 풀이를 읽어 보세요.') };
+  }
+  var oka = !!given && equal(given, q.answer);
+  return { correct: oka, nextHint: 0, feedback: oka
+    ? ('정답! ' + format(q.answer) + ' 맞아요. 입력한 ' + format(given) + ' 과 같아요.')
+    : ('아쉬워요. 입력한 답은 ' + (given ? format(given) : '(없음)') + ' 이에요. 정답은 ' + format(q.answer) + ' 입니다. 아래 풀이를 읽어 보세요.') };
+}
+
+/* ---------------- 상태 저장 ---------------- */
+var STATE_KEY = 'fractionforge.v1';
+/* phase: 명시적 진행 단계. screen과 같은 값(start/A/B/C/result)을 저장해 복원에 씁니다.
+   pos: 활동별 문제 번호 저장. index: 최종 확정 답 수(= answers 중 final 개수). */
+var state = { version: 1, grade: 3, screen: 'start', phase: 'start', pos: { a: 0, b: 0, c: 0 }, queue: [], index: 0, score: 0, answers: [], best: { grade3: 0, grade4: 0 }, updatedAt: Date.now() };
+function save(){ try{ state.updatedAt = Date.now(); localStorage.setItem(STATE_KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    var raw = localStorage.getItem(STATE_KEY);
+    if(!raw) return false;
+    var s = JSON.parse(raw);
+    if(!s || s.version !== 1) return false;
+    state = Object.assign(state, s);
+    /* 구버전 마이그레이션: phase/pos가 없으면 answers를 세어 만든다 */
+    if(!state.phase) state.phase = state.screen || 'start';
+    if(!state.pos){
+      var splitN = 0, cmpN = 0, arN = 0;
+      state.answers.forEach(function(a){
+        if(a.final === false) return;
+        if(a.type === 'split') splitN++;
+        else if(a.type === 'compare') cmpN++;
+        else if(a.type === 'add' || a.type === 'sub') arN++;
+      });
+      state.pos = { a: splitN, b: cmpN, c: arN };
+    }
+    return true;
+  }catch(e){ return false; }
+}
+function buildSession(grade){
+  var q = [];
+  for(var i=0;i<3;i++) q.push(makeSplit(grade));
+  for(var j=0;j<4;j++) q.push(makeCompare(grade));
+  var ops = grade === 3 ? ['add','add','sub','add'] : ['add','sub','add','sub'];
+  for(var k=0;k<4;k++) q.push(makeArith(grade, ops[k]));
+  return q;
+}
+
+/* ---------------- SVG 렌더러 ---------------- */
+var PIE_COLORS = ['#FFD166','#8ECAE6','#B5E48C','#FFB3C1','#CDB4DB','#FFAFCC','#94D2BD','#E4C1F9','#FDFFB6','#FFD6FF','#CAFFBF','#9BF6FF'];
+function polar(cx, cy, r, ang){ var a = (ang - 90) * Math.PI/180; return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; }
+function pieSVG(n, d, opts){
+  opts = opts || {};
+  var size = opts.size || 170, id = opts.id || ('p'+Math.floor(Math.random()*1e9));
+  var cx = 90, cy = 90, r = 78, vb = 180;
+  var s = '<svg viewBox="0 0 180 180" width="' + size + '" height="' + size + '" role="img" aria-label="' + n + '/' + d + ' 파이 그림, ' + n + '조각 색칠됨">';
+  for(var i=0;i<d;i++){
+    var a0 = (360/d)*i, a1 = (360/d)*(i+1);
+    var p0 = polar(cx,cy,r,a0), p1 = polar(cx,cy,r,a1);
+    var large = (a1-a0) > 180 ? 1 : 0;
+    var path = 'M'+cx+' '+cy+' L'+p0[0].toFixed(2)+' '+p0[1].toFixed(2)+' A'+r+' '+r+' 0 '+large+' 1 '+p1[0].toFixed(2)+' '+p1[1].toFixed(2)+' Z';
+    var filled = i < n;
+    var col = filled ? PIE_COLORS[i % PIE_COLORS.length] : '#FFFFFF';
+    if(opts.interactive){
+      s += '<path class="pie-slice" d="'+path+'" fill="'+col+'" stroke="#2B2620" stroke-width="2" tabindex="0" role="button" aria-pressed="'+filled+'" aria-label="'+(i+1)+'번째 조각 '+(filled?'색칠됨':'비어 있음')+'" data-i="'+i+'"><title>'+(i+1)+'번째 조각</title></path>';
+    }else{
+      s += '<path d="'+path+'" fill="'+col+'" stroke="#2B2620" stroke-width="2"/>';
+    }
+  }
+  s += '<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#2B2620"/></svg>';
+  return s;
+}
+function barSVG(n, d, opts){
+  opts = opts || {};
+  var W = 220, H = 56;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + (opts.width || 220) + '" role="img" aria-label="' + n + '/' + d + ' 막대 그림, ' + n + '칸 색칠됨">';
+  var cw = (W-4)/d;
+  for(var i=0;i<d;i++){
+    var x = 2 + i*cw;
+    var filled = i < n;
+    var col = filled ? PIE_COLORS[i % PIE_COLORS.length] : '#FFFFFF';
+    if(opts.interactive){
+      s += '<g class="pie-slice" tabindex="0" role="button" aria-pressed="'+filled+'" aria-label="'+(i+1)+'번째 칸" data-i="'+i+'">'
+        + '<rect x="'+x.toFixed(2)+'" y="2" width="'+(cw-2).toFixed(2)+'" height="'+(H-4)+'" rx="6" fill="'+col+'" stroke="#2B2620" stroke-width="2"/></g>';
+    }else{
+      s += '<rect x="'+x.toFixed(2)+'" y="2" width="'+(cw-2).toFixed(2)+'" height="'+(H-4)+'" rx="6" fill="'+col+'" stroke="#2B2620" stroke-width="2"/>';
+    }
+  }
+  return s + '</svg>';
+}
+function lineSVG(f1, f2){
+  var W = 320, H = 64, pad = 18;
+  var vals = [0, f1.n/f1.d, f2.n/f2.d, 1];
+  function X(v){ return pad + v*(W-2*pad); }
+  var s = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:340px" role="img" aria-label="0부터 1까지 숫자선">';
+  s += '<line x1="'+pad+'" y1="34" x2="'+(W-pad)+'" y2="34" stroke="#2B2620" stroke-width="3" stroke-linecap="round"/>';
+  [[0,'0'],[1,'1']].forEach(function(t){
+    s += '<line x1="'+X(t[0])+'" y1="26" x2="'+X(t[0])+'" y2="42" stroke="#2B2620" stroke-width="3"/><text x="'+X(t[0])+'" y="58" text-anchor="middle" font-size="13" font-weight="700">'+t[1]+'</text>';
+  });
+  s += '<circle cx="'+X(f1.n/f1.d)+'" cy="34" r="8" fill="#B7791F" stroke="#fff" stroke-width="2.5"><title>'+format(f1)+'</title></circle>';
+  s += '<circle cx="'+X(f2.n/f2.d)+'" cy="34" r="8" fill="#1E7E46" stroke="#fff" stroke-width="2.5"><title>'+format(f2)+'</title></circle>';
+  return s + '</svg>';
+}
+
+/* ---------------- 화면 전환 ---------------- */
+var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+function finalCount(type){
+  return state.answers.filter(function(a){
+    if(a.final === false) return false;
+    if(type === 'split') return a.type === 'split';
+    if(type === 'compare') return a.type === 'compare';
+    return a.type === 'add' || a.type === 'sub';
+  }).length;
+}
+function finalAnswers(){ return state.answers.filter(function(a){ return a.final !== false; }); }
+/* pos는 "푼 문제 수"로 저장한다 (인덱스가 아니라 개수). 확정 답 목록에서 세므로 항상 정확하다. */
+function syncPos(){ state.pos = { a: finalCount('split'), b: finalCount('compare'), c: finalCount('arith') }; }
+function show(name){
+  state.screen = name;
+  if(name === 'selftest'){ screens.forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-screen') === name); }); return; }
+  state.phase = name;
+  syncPos();
+  save();
+  screens.forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-screen') === name); });
+  var h = document.querySelector('[data-screen="'+name+'"] h2, [data-screen="'+name+'"] h1');
+  if(h){ h.setAttribute('tabindex','-1'); try{ h.focus({preventScroll:true}); }catch(e){} }
+  document.getElementById('live').textContent = ({start:'시작 화면',A:'활동 A 똑같이 나누기',B:'활동 B 어느 게 클까',C:'활동 C 조각 모으기',result:'결과 화면'})[name] + '입니다.';
+  window.scrollTo(0,0);
+}
+
+/* ---------------- 업데이트 내역 모달 ---------------- */
+var UPDATE_ENTRIES = [
+  { date: '2026-11-05', items: ['프로젝트를 처음 만들었어요. 이름은 분수 공작소(FractionForge)로 정했어요.', '어떻게 만들지 적은 구현 계획서를 넣었어요.', '인터넷 없이 index.html 파일 하나로 실행되도록 계획했어요.'] },
+  { date: '2026-11-06', items: ['앱을 처음 완성했어요: 시작 → 활동 A(똑같이 나누기) → 활동 B(어느 게 클까) → 활동 C(조각 모으기) → 결과 화면까지 이어져요.', '정답은 사람이 미리 적어 두지 않고, 분수 계산 엔진이 직접 계산해요.', '원 파이·막대·숫자선 그림을 앱 안에서 직접 그려요.', '중간에 새로고침해도 점수와 순서가 그대로 이어져요. 결과 화면에서도 그대로 보여요.', '다음 단계 버튼에 금빛 반짝임(펄스)을 넣었어요.', '이 업데이트 내역 팝업을 시작 화면에 넣었어요.', '계산기가 스스로 검사하는 ?selftest=1 화면을 넣었어요.', '활동 A에서 틀린 시도도 기록해서 "n번 만에 맞혔어요!"를 보여줘요.', '작은 휴대폰 화면에서도 깨지지 않고, 글자를 더 진하게 했어요.', '선생님용 안내서(README.md)를 넣었어요.', '깃허브에 올리고 배포했어요. 주소: https://WBmaker2.github.io/FractionForge/'] }
+];
+function renderUpdates(){
+  var box = document.getElementById('updateList');
+  box.innerHTML = UPDATE_ENTRIES.map(function(e){
+    return '<div class="update-entry"><h3>' + e.date + '</h3><ul>' + e.items.map(function(t){ return '<li>'+t+'</li>'; }).join('') + '</ul></div>';
+  }).join('');
+}
+var modalBg = document.getElementById('modalBg'), lastFocus = null;
+function openModal(){
+  renderUpdates();
+  lastFocus = document.activeElement;
+  modalBg.classList.add('open');
+  document.getElementById('btnCloseModal').focus();
+  document.addEventListener('keydown', modalKeys);
+}
+function closeModal(){
+  modalBg.classList.remove('open');
+  document.removeEventListener('keydown', modalKeys);
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+}
+function modalKeys(e){
+  if(e.key === 'Escape'){ closeModal(); }
+  if(e.key === 'Tab'){
+    var f = modalBg.querySelectorAll('button');
+    var first = f[0], last = f[f.length-1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+}
+document.getElementById('btnUpdateLog').addEventListener('click', openModal);
+document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+modalBg.addEventListener('click', function(e){ if(e.target === modalBg) closeModal(); });
+
+/* ---------------- 진행 상태 UI ---------------- */
+var cur = { aIdx: 0, bIdx: 0, cIdx: 0, curD: 4, curN: 2, aTries: 0, bSel: null, bHints: 0, cHints: 0, t0: 0 };
+function sessionQs(){ return state.queue; }
+function qsOf(type){ return sessionQs().filter(function(q){ return q.type === type || (type==='arith' && (q.type==='add'||q.type==='sub')); }); }
+function setScoreLabels(){
+  ['A','B','C'].forEach(function(k){
+    var el = document.getElementById('score'+k);
+    if(el) el.textContent = '점수 ' + state.score;
+  });
+}
+function refreshBestLabels(){
+  document.getElementById('best3').textContent = '최고 점수: ' + (state.best.grade3||0) + '점';
+  document.getElementById('best4').textContent = '최고 점수: ' + (state.best.grade4||0) + '점';
+}
+function recordAttempt(q, given, correct, ms, hintsUsed){
+  /* 확정 전 시도(활동 A 오답). 점수와 index에는 들어가지 않음 */
+  state.answers.push({ qid: q.id, type: q.type, prompt: q.prompt, given: given, correct: false, final: false, ms: ms, hintsUsed: hintsUsed||0,
+    answerText: q.type==='compare' ? q.symbol : format(q.answer), steps: q.steps || [] });
+  save();
+}
+function recordAnswer(q, given, correct, ms, hintsUsed, tries){
+  state.answers.push({ qid: q.id, type: q.type, prompt: q.prompt, given: given, correct: !!correct, final: true, ms: ms, hintsUsed: hintsUsed||0, tries: tries||1,
+    answerText: q.type==='compare' ? q.symbol : format(q.answer), steps: q.steps || [] });
+  if(correct) state.score += 1;
+  state.index = state.answers.filter(function(a){ return a.final !== false; }).length;
+  syncPos();
+  save(); setScoreLabels();
+}
+function finalAnswers(){ return state.answers.filter(function(a){ return a.final !== false; }); }
+
+/* ---------------- 활동 A ---------------- */
+function renderA(){
+  var list = qsOf('split');
+  var q = list[cur.aIdx];
+  if(!q){ document.getElementById('btnToBA').disabled = false; return; }
+  cur.curD = Math.max(2, Math.min(12, q.goal.d));
+  cur.curN = 0;
+  cur.aTries = 0;
+  cur.t0 = Date.now();
+  document.getElementById('progA').textContent = (cur.aIdx+1) + ' / ' + list.length;
+  document.getElementById('barA').style.width = ((cur.aIdx)/list.length*100) + '%';
+  document.getElementById('promptA').innerHTML = '목표: ' + fracHTML(q.goal) + ' 만들기';
+  document.getElementById('btnNextA').disabled = true;
+  document.getElementById('btnToBA').disabled = true;
+  var fb = document.getElementById('fbA');
+  fb.className = 'feedback'; fb.textContent = '조각을 눌러 색칠해 보세요. 분모는 몇 조각으로 나누었는지, 분자는 몇 조각을 색칠했는지예요.';
+  drawA();
+  setScoreLabels();
+}
+function drawA(){
+  document.getElementById('denOutA').textContent = cur.curD + '등분';
+  document.getElementById('pieA').innerHTML = pieSVG(cur.curN, cur.curD, { size: 190, interactive: true });
+  document.getElementById('barBoxA').innerHTML = barSVG(cur.curN, cur.curD, { interactive: true });
+  document.getElementById('curFracA').innerHTML = fracHTML(normalize({n:cur.curN,d:cur.curD}));
+  bindSlices(document.getElementById('pieA'));
+  bindSlices(document.getElementById('barBoxA'));
+}
+function bindSlices(root){
+  Array.prototype.forEach.call(root.querySelectorAll('[data-i]'), function(el){
+    function choose(){
+      var i = parseInt(el.getAttribute('data-i'),10);
+      cur.curN = (cur.curN === i+1) ? Math.max(0, i) : (i+1);
+      if(cur.curN > cur.curD) cur.curN = cur.curD;
+      drawA();
+    }
+    el.addEventListener('click', choose);
+    el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); choose(); } });
+  });
+}
+document.getElementById('denMinusA').addEventListener('click', function(){ if(cur.curD>2){cur.curD--; cur.curN=Math.min(cur.curN,cur.curD); drawA();} });
+document.getElementById('denPlusA').addEventListener('click', function(){ if(cur.curD<12){cur.curD++; drawA();} });
+document.getElementById('btnCheckA').addEventListener('click', function(){
+  var list = qsOf('split'), q = list[cur.aIdx];
+  if(!q) return;
+  var given = normalize({ n: cur.curN, d: cur.curD });
+  var r = gradeAnswer(given, q);
+  var fb = document.getElementById('fbA');
+  var ms = Date.now() - cur.t0;
+  if(r.correct){
+    cur.aTries++;
+    fb.className = 'feedback good';
+    var again = cur.aTries > 1 ? (' ' + cur.aTries + '번 만에 맞혔어요!') : '';
+    fb.innerHTML = '정답! ' + fracHTML(given) + ' 은 목표 ' + fracHTML(q.goal) + ' 와 같아요.' + again + ' 조각 ' + q.steps.join(' ');
+    recordAnswer(q, format(given), true, ms, 0, cur.aTries);
+    document.getElementById('btnNextA').disabled = false;
+    if(cur.aIdx === list.length - 1){ document.getElementById('btnToBA').disabled = false; document.getElementById('btnNextA').disabled = true; document.getElementById('barA').style.width='100%'; }
+    document.getElementById('btnCheckA').disabled = true;
+  }else{
+    cur.aTries++;
+    recordAttempt(q, format(given), false, ms, 0);
+    fb.className = 'feedback bad';
+    var tip = cur.curD !== q.goal.d ? ('분모가 달라요. 목표는 ' + q.goal.d + '등분이에요. [분모 버튼]으로 조각 수를 맞추세요.')
+      : ('분모는 맞아요! 색칠은 ' + q.goal.n + '조각이 필요해요. 지금은 ' + cur.curN + '조각이에요.');
+    fb.textContent = '아직 달라요. 지금은 ' + format(given) + ', 목표는 ' + format(q.goal) + ' 이에요. ' + tip + ' (' + cur.aTries + '번째 시도)';
+  }
+});
+document.getElementById('btnNextA').addEventListener('click', function(){
+  cur.aIdx++;
+  document.getElementById('btnCheckA').disabled = false;
+  renderA();
+});
+document.getElementById('btnToBA').addEventListener('click', function(){ cur.bIdx = 0; cur.bSel = null; cur.bHints = 0; renderB(); show('B'); });
+
+/* ---------------- 활동 B ---------------- */
+function renderB(){
+  var list = sessionQs().filter(function(q){ return q.type==='compare'; });
+  var q = list[cur.bIdx];
+  if(!q){ document.getElementById('btnToCB').disabled = false; return; }
+  cur.t0 = Date.now(); cur.bSel = null; cur.bHints = 0;
+  document.getElementById('progB').textContent = (cur.bIdx+1) + ' / ' + list.length;
+  document.getElementById('barB').style.width = ((cur.bIdx)/list.length*100) + '%';
+  document.getElementById('promptB').innerHTML = fracHTML(q.f1) + ' □ ' + fracHTML(q.f2) + ' — 가운데에 들어갈 말을 고르세요.';
+  document.getElementById('labelB1').textContent = '왼쪽: ' + format(q.f1);
+  document.getElementById('labelB2').textContent = '오른쪽: ' + format(q.f2);
+  document.getElementById('valB1').innerHTML = fracHTML(q.f1);
+  document.getElementById('valB2').innerHTML = fracHTML(q.f2);
+  document.getElementById('pieB1').innerHTML = pieSVG(q.f1.n, q.f1.d, { size: 160 });
+  document.getElementById('pieB2').innerHTML = pieSVG(q.f2.n, q.f2.d, { size: 160 });
+  document.getElementById('lineB').innerHTML = lineSVG(q.f1, q.f2);
+  Array.prototype.forEach.call(document.querySelectorAll('.cmp-btns .btn'), function(b){
+    b.setAttribute('aria-pressed','false');
+  });
+  var fb = document.getElementById('fbB'); fb.className='feedback'; fb.textContent='답을 고른 뒤 “정답 확인하기”를 눌러 보세요.';
+  var hb = document.getElementById('hintB'); hb.hidden = true; hb.innerHTML='';
+  document.getElementById('stepsB').innerHTML='';
+  document.getElementById('btnCheckB').disabled = true;
+  document.getElementById('btnNextB').disabled = true;
+  document.getElementById('btnToCB').disabled = true;
+  setScoreLabels();
+}
+Array.prototype.forEach.call(document.querySelectorAll('.cmp-btns .btn'), function(b){
+  b.addEventListener('click', function(){
+    Array.prototype.forEach.call(document.querySelectorAll('.cmp-btns .btn'), function(x){ x.setAttribute('aria-pressed','false'); });
+    b.setAttribute('aria-pressed','true');
+    cur.bSel = parseInt(b.getAttribute('data-cmp'),10);
+    document.getElementById('btnCheckB').disabled = false;
+  });
+});
+document.getElementById('btnHintB').addEventListener('click', function(){
+  var list = sessionQs().filter(function(q){ return q.type==='compare'; });
+  var q = list[cur.bIdx]; if(!q) return;
+  cur.bHints = Math.min(cur.bHints+1, 3);
+  var hb = document.getElementById('hintB'); hb.hidden = false;
+  hb.innerHTML = '<strong>힌트 ' + cur.bHints + '/3:</strong> ' + q.hints.slice(0, cur.bHints).join('<br>');
+});
+document.getElementById('btnCheckB').addEventListener('click', function(){
+  var list = sessionQs().filter(function(q){ return q.type==='compare'; });
+  var q = list[cur.bIdx]; if(!q || cur.bSel===null) return;
+  var r = gradeAnswer(cur.bSel, q);
+  var sym = cur.bSel===1?'>':(cur.bSel===-1?'<':'=');
+  var fb = document.getElementById('fbB');
+  var ms = Date.now() - cur.t0;
+  fb.className = r.correct ? 'feedback good' : 'feedback bad';
+  fb.textContent = r.feedback;
+  document.getElementById('stepsB').innerHTML = '<div class="hint-box"><strong>풀이</strong><ol class="steps">' + q.steps.map(function(s){return '<li>'+s+'</li>';}).join('') + '</ol></div>';
+  recordAnswer(q, sym, r.correct, ms, cur.bHints);
+  document.getElementById('btnCheckB').disabled = true;
+  if(cur.bIdx === list.length - 1){ document.getElementById('btnToCB').disabled = false; document.getElementById('barB').style.width='100%'; }
+  else document.getElementById('btnNextB').disabled = false;
+});
+document.getElementById('btnNextB').addEventListener('click', function(){ cur.bIdx++; renderB(); });
+document.getElementById('btnToCB').addEventListener('click', function(){ cur.cIdx = 0; cur.cHints = 0; renderC(); show('C'); });
+
+/* ---------------- 활동 C ---------------- */
+function renderC(){
+  var list = sessionQs().filter(function(q){ return q.type==='add'||q.type==='sub'; });
+  var q = list[cur.cIdx];
+  if(!q){ document.getElementById('btnToResultC').disabled = false; return; }
+  cur.t0 = Date.now(); cur.cHints = 0;
+  document.getElementById('progC').textContent = (cur.cIdx+1) + ' / ' + list.length;
+  document.getElementById('barC').style.width = ((cur.cIdx)/list.length*100) + '%';
+  var sym = q.type==='add' ? '+' : '−';
+  document.getElementById('promptC').innerHTML = fracHTML(q.f1) + ' ' + sym + ' ' + fracHTML(q.f2) + ' = ?';
+  document.getElementById('pieC1').innerHTML = pieSVG(q.f1.n, q.f1.d, { size: 150 });
+  document.getElementById('pieC2').innerHTML = pieSVG(q.f2.n, q.f2.d, { size: 150 });
+  document.getElementById('inputC').value = '';
+  var fb = document.getElementById('fbC'); fb.className='feedback'; fb.textContent='답을 쓰고 제출해 보세요. 분모가 0이거나 빈칸이면 버튼이 동작하지 않아요.';
+  var hb = document.getElementById('hintC'); hb.hidden = true; hb.innerHTML='';
+  document.getElementById('stepsC').innerHTML='';
+  document.getElementById('btnNextC').disabled = true;
+  document.getElementById('btnToResultC').disabled = true;
+  document.getElementById('btnSubmitC').disabled = false;
+  setScoreLabels();
+  setTimeout(function(){ try{document.getElementById('inputC').focus();}catch(e){} }, 50);
+}
+document.getElementById('btnHintC').addEventListener('click', function(){
+  var list = sessionQs().filter(function(q){ return q.type==='add'||q.type==='sub'; });
+  var q = list[cur.cIdx]; if(!q) return;
+  cur.cHints = Math.min(cur.cHints+1, 3);
+  var hb = document.getElementById('hintC'); hb.hidden = false;
+  hb.innerHTML = '<strong>힌트 ' + cur.cHints + '/3:</strong> ' + q.hints.slice(0, cur.cHints).join('<br>');
+});
+document.getElementById('formC').addEventListener('submit', function(e){
+  e.preventDefault();
+  var list = sessionQs().filter(function(q){ return q.type==='add'||q.type==='sub'; });
+  var q = list[cur.cIdx]; if(!q) return;
+  var raw = document.getElementById('inputC').value;
+  var fb = document.getElementById('fbC');
+  if(!raw.trim()){ fb.className='feedback bad'; fb.textContent='답이 비어 있어요. 예) 3/4 처럼 적어 보세요.'; return; }
+  var given = parse(raw);
+  if(!given){ fb.className='feedback bad'; fb.textContent='"' + raw + '" 는 읽을 수 없어요. 3/4, 1/2, 1 처럼 적어 보세요. 분모는 0이 될 수 없어요.'; return; }
+  var r = gradeAnswer(given, q);
+  var ms = Date.now() - cur.t0;
+  fb.className = r.correct ? 'feedback good' : 'feedback bad';
+  fb.textContent = r.feedback;
+  document.getElementById('stepsC').innerHTML = '<div class="hint-box"><strong>풀이</strong><ol class="steps">' + q.steps.map(function(s){return '<li>'+s+'</li>';}).join('') + '</ol></div>';
+  recordAnswer(q, format(given), r.correct, ms, cur.cHints);
+  document.getElementById('btnSubmitC').disabled = true;
+  if(cur.cIdx === list.length - 1){ document.getElementById('btnToResultC').disabled = false; document.getElementById('barC').style.width='100%'; }
+  else document.getElementById('btnNextC').disabled = false;
+});
+document.getElementById('btnNextC').addEventListener('click', function(){ cur.cIdx++; renderC(); });
+document.getElementById('btnToResultC').addEventListener('click', function(){ renderResult(); show('result'); });
+
+/* ---------------- 결과 ---------------- */
+function renderResult(){
+  var total = state.queue.length || 11;
+  var correct = state.score;
+  var pct = total ? Math.round(correct/total*100) : 0;
+  document.getElementById('totalR').textContent = correct + '점 / ' + total + '문제';
+  document.getElementById('accR').textContent = '정답률 ' + pct + '%';
+  document.getElementById('pctR').textContent = pct + '%';
+  var ring = document.getElementById('ringR');
+  var C = 326.7;
+  ring.setAttribute('stroke-dashoffset', String(C * (1 - pct/100)));
+  var key = state.grade === 4 ? 'grade4' : 'grade3';
+  if(correct > (state.best[key]||0)){ state.best[key] = correct; save(); }
+  refreshBestLabels();
+  document.getElementById('bestR').textContent = (state.grade === 4 ? '4학년' : '3학년') + ' 최고 점수: ' + state.best[key] + '점';
+  var finals = finalAnswers();
+  var wrong = finals.filter(function(a){ return !a.correct; });
+  var solvedSlow = finals.filter(function(a){ return a.correct && (a.tries||1) > 1; });
+  var ul = document.getElementById('reviewR');
+  if(!wrong.length && !solvedSlow.length){ ul.innerHTML = '<li>전부 맞혔어요! 정말 대단해요.</li>'; }
+  else{
+    var items = solvedSlow.map(function(a){
+      return '<li><strong>' + a.prompt + '</strong><br>' + (a.tries||1) + '번 만에 맞혔어요! 정답: ' + a.answerText + '</li>';
+    }).concat(wrong.map(function(a){
+      return '<li><strong>' + a.prompt + '</strong><br>낸 답: ' + (a.given||'(없음)') + ' · 정답: ' + a.answerText
+        + (a.steps && a.steps.length ? '<br><span style="color:var(--ink-soft)">' + a.steps[0] + '</span>' : '') + '</li>';
+    }));
+    ul.innerHTML = items.join('');
+  }
+}
+document.getElementById('btnRetry').addEventListener('click', function(){
+  startGrade(state.grade);
+});
+document.getElementById('btnHome').addEventListener('click', function(){
+  state.index = 0; state.score = 0; state.answers = []; state.pos = { a: 0, b: 0, c: 0 };
+  cur.aIdx = 0; cur.bIdx = 0; cur.cIdx = 0;
+  refreshBestLabels(); updateResumeBtn(); show('start');
+});
+
+/* ---------------- 시작 화면 ---------------- */
+function setGrade(g){
+  state.grade = g; save();
+  document.getElementById('grade3').setAttribute('aria-pressed', g===3 ? 'true':'false');
+  document.getElementById('grade4').setAttribute('aria-pressed', g===4 ? 'true':'false');
+}
+document.getElementById('grade3').addEventListener('click', function(){ setGrade(3); });
+document.getElementById('grade4').addEventListener('click', function(){ setGrade(4); });
+function startGrade(g){
+  setGrade(g);
+  state.queue = buildSession(g);
+  state.index = 0; state.score = 0; state.answers = []; state.pos = { a: 0, b: 0, c: 0 };
+  cur.aIdx = 0; cur.bIdx = 0; cur.cIdx = 0;
+  save(); setScoreLabels(); updateResumeBtn();
+  document.getElementById('btnCheckA').disabled = false;
+  renderA(); show('A');
+}
+/* 저장된 확정 답 개수로 이어할 위치를 계산한다. 시도 기록(final:false)은 세지 않는다.
+   pos 필드는 참고용으로 함께 저장되지만, 복원의 기준은 answers 목록 자체다. */
+function resumePosition(){
+  var splits = qsOf('split').length;
+  var cmps = sessionQs().filter(function(q){ return q.type==='compare'; }).length;
+  var doneSplit = Math.min(finalCount('split'), splits);
+  var doneCmp = Math.min(finalCount('compare'), cmps);
+  var doneAr = Math.min(finalCount('arith'), 4);
+  if(doneSplit < splits) return { phase: 'A', a: doneSplit, b: 0, c: 0 };
+  if(doneCmp < cmps) return { phase: 'B', a: splits, b: doneCmp, c: 0 };
+  if(doneAr < 4) return { phase: 'C', a: splits, b: cmps, c: doneAr };
+  return { phase: 'result', a: splits, b: cmps, c: 4 };
+}
+function gotoPosition(p){
+  cur.aIdx = p.a||0; cur.bIdx = p.b||0; cur.cIdx = p.c||0;
+  if(p.phase === 'A'){ document.getElementById('btnCheckA').disabled = false; renderA(); show('A'); }
+  else if(p.phase === 'B'){ renderB(); show('B'); }
+  else if(p.phase === 'C'){ renderC(); show('C'); }
+  else { renderResult(); show('result'); }
+}
+document.getElementById('btnStart').addEventListener('click', function(){ startGrade(state.grade); });
+document.getElementById('btnResume').addEventListener('click', function(){ gotoPosition(resumePosition()); });
+document.getElementById('btnReset').addEventListener('click', function(){
+  if(confirm('저장된 점수와 이어하기 기록을 지울까요?')){
+    try{ localStorage.removeItem(STATE_KEY); }catch(e){}
+    state = { version: 1, grade: 3, screen: 'start', phase: 'start', pos: { a: 0, b: 0, c: 0 }, queue: [], index: 0, score: 0, answers: [], best: { grade3: 0, grade4: 0 }, updatedAt: Date.now() };
+    setGrade(3); refreshBestLabels(); updateResumeBtn(); show('start');
+  }
+});
+function updateResumeBtn(){
+  var b = document.getElementById('btnResume');
+  if(state.queue && state.queue.length && state.answers.length && state.screen !== 'result' && state.screen !== 'start'){ b.hidden = false; }
+  else b.hidden = true;
+}
+
+/* ---------------- 셀프테스트 (?selftest=1) ---------------- */
+function runSelfTests(){
+  var cases = [];
+  function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
+  function t(name, fn){
+    var ok = false, detail = '';
+    try{ ok = !!fn(); }catch(e){ detail = String((e && e.message) || e); }
+    cases.push({ name: name, ok: ok, detail: detail });
+  }
+  t('normalize({n:2,d:4}) → {n:1,d:2}', function(){ return eq(normalize({ n: 2, d: 4 }), { n: 1, d: 2 }); });
+  t('compare(1/3, 1/4) → 1 (1/3이 큼)', function(){ return compare({ n: 1, d: 3 }, { n: 1, d: 4 }) === 1; });
+  t('add(1/2, 1/2) → 1', function(){ var r = add({ n: 1, d: 2 }, { n: 1, d: 2 }); return eq(r, { n: 1, d: 1 }) && format(r) === '1'; });
+  t('add(1/4, 2/4) → 3/4', function(){ return eq(add({ n: 1, d: 4 }, { n: 2, d: 4 }), { n: 3, d: 4 }); });
+  t('subtract(1, 1/3) → 2/3', function(){ return eq(subtract({ n: 1, d: 1 }, { n: 1, d: 3 }), { n: 2, d: 3 }); });
+  t("parse('2/4')와 parse('1/2')는 같다", function(){ return equal(parse('2/4'), parse('1/2')); });
+  t('분모 0·빈 입력은 오류 대신 null', function(){ return parse('3/0') === null && parse('') === null && parse('   ') === null && normalize({ n: 1, d: 0 }) === null; });
+  t('가분수 3/2 → "1과 1/2"', function(){ return format({ n: 3, d: 2 }) === '1과 1/2'; });
+  t('makeCompare: 기호와 교차곱 일치 (20회)', function(){
+    for(var i = 0; i < 20; i++){
+      var q = makeCompare(i % 2 ? 3 : 4);
+      var s = q.answer === 1 ? '>' : (q.answer === -1 ? '<' : '=');
+      if(q.symbol !== s) return false;
+    }
+    return true;
+  });
+  t('makeArith: 답이 엔진 계산과 일치 (20회)', function(){
+    for(var i = 0; i < 20; i++){
+      var op = i % 2 ? 'add' : 'sub';
+      var q = makeArith(i % 2 ? 3 : 4, op);
+      var exp = op === 'add' ? add(q.f1, q.f2) : subtract(q.f1, q.f2);
+      if(!equal(q.answer, exp)) return false;
+    }
+    return true;
+  });
+  var pass = cases.filter(function(c){ return c.ok; }).length;
+  window.__ffSelfTest = { pass: pass, fail: cases.length - pass, total: cases.length };
+  document.getElementById('selfSummary').textContent = pass + ' / ' + cases.length + ' 통과' + (pass === cases.length ? ' — 전부 성공!' : ' — 실패가 있어요.');
+  document.getElementById('selfBox').innerHTML = '<table class="selftest-table"><thead><tr><th>검사</th><th>결과</th><th>자세히</th></tr></thead><tbody>' +
+    cases.map(function(c){ return '<tr><td>' + c.name + '</td><td class="' + (c.ok ? 'selftest-pass' : 'selftest-fail') + '">' + (c.ok ? '통과' : '실패') + '</td><td>' + (c.detail || '') + '</td></tr>'; }).join('') +
+    '</tbody></table>';
+  show('selftest');
+}
+
+/* ---------------- 초기화 ---------------- */
+(function init(){
+  /* ?selftest=1 이면 연산 엔진 자가 점검 화면만 보여준다 */
+  var isSelftest = false;
+  try{ isSelftest = (window.location.search || '').indexOf('selftest') !== -1; }catch(e){}
+  if(isSelftest){ runSelfTests(); return; }
+  var had = load();
+  setGrade(state.grade || 3);
+  refreshBestLabels();
+  // 화면 복원: 새로고침 후 진행 상태 복원 (결과 화면 포함).
+  // 복원 위치는 확정 답 목록에서 계산한다 (resumePosition).
+  if(had && state.queue && state.queue.length && finalAnswers().length > 0){
+    updateResumeBtn();
+    document.getElementById('btnResume').hidden = false;
+    try{
+      setScoreLabels();
+      gotoPosition(resumePosition());
+      return;
+    }catch(e){}
+  }
+  updateResumeBtn();
+  show('start');
+})();
+</script>
+</body>
+</html>
